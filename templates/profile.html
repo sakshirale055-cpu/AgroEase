@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}My Profile | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+        <div class="page-header">
+            <h1>My Profile</h1>
+            <p>Your AgroEase account details</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="{{ 'accepted' if category == 'success' else 'rejected' }}" role="status">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="machinery-card">
+            <p><strong>Name:</strong> {{ user.name }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Role:</strong> {{ role }}</p>
+            <p><strong>Phone:</strong> {{ user.phone or 'Not added' }}</p>
+            <p><strong>Location:</strong> {{ user.location or 'Not added' }}</p>
+            {% if role in ['Worker', 'Equipment Owner'] %}
+                <p><strong>Payment methods:</strong>
+                    {% if user.formatted_online_payment_methods %}
+                        Cash and {{ user.formatted_online_payment_methods|join(', ') }}
+                    {% else %}
+                        Cash only
+                    {% endif %}
+                </p>
+            {% endif %}
+            {% if role == 'Worker' %}
+                {% if user.worker_profile %}
+                    {% if user.worker_profile.image_filename %}
+                        <img class="listing-image" src="{{ url_for('static', filename='uploads/' ~ user.worker_profile.image_filename) }}" alt="{{ user.name }}">
+                    {% endif %}
+                    <p><strong>Skill:</strong> {{ user.worker_profile.skill }}</p>
+                    <p><strong>Availability:</strong> {{ 'Available' if user.worker_profile.available else 'Unavailable' }}</p>
+                {% else %}
+                    <p>Your worker listing is not set up yet.</p>
+                {% endif %}
+            {% endif %}
+            {% if account_roles|length > 1 %}
+                <form action="{{ url_for('switch_role') }}" method="post" class="profile-role-switch">
+                    <div class="profile-role-switch-copy">
+                        <h2>Switch account</h2>
+                        <p>Choose which AgroEase role you want to use.</p>
+                    </div>
+                    <div class="profile-role-switch-controls">
+                        <label for="switch-role">Account role</label>
+                        <select id="switch-role" name="role">
+                            {% for account_role in account_roles %}
+                                <option value="{{ account_role }}" {% if account_role == role %}selected{% endif %}>{{ account_role }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn">Switch account</button>
+                    </div>
+                </form>
+            {% endif %}
+            <a href="{{ url_for('edit_profile') }}" class="btn">Edit profile</a>
+            <a href="{{ url_for('dashboard') }}" class="back-btn">Back to dashboard</a>
+        </section>
+    </main>
+{% endblock %}

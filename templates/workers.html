@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Find Workers | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+        <div class="page-header">
+            <h1>Find Farm Workers</h1>
+            <p>Search local workers by name, skill, location, and availability.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="{{ 'success-message' if category == 'success' else 'error-message' }}" role="status">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="GET" action="{{ url_for('workers') }}" class="search-form">
+        <input
+            type="search"
+            name="search"
+            placeholder="Search worker name or skill"
+            value="{{ search }}"
+            aria-label="Search worker name or skill"
+        >
+
+        <input
+            type="search"
+            name="location"
+            placeholder="Filter by location"
+            value="{{ location }}"
+            aria-label="Filter by location"
+        >
+
+        <select name="availability" aria-label="Filter by availability">
+            <option value="" {% if not availability %}selected{% endif %}>Any availability</option>
+            <option value="available" {% if availability == "available" %}selected{% endif %}>Available</option>
+            <option value="unavailable" {% if availability == "unavailable" %}selected{% endif %}>Unavailable</option>
+        </select>
+
+        <button type="submit" class="btn">Search workers</button>
+        </form>
+
+        {% if workers %}
+            <div class="rental-container">
+
+                {% for worker in workers %}
+
+                    <article class="rental-card">
+
+                        {% if worker.image_filename %}
+                            <img class="listing-image" src="{{ url_for('static', filename='uploads/' ~ worker.image_filename) }}" alt="{{ worker.name }}">
+                        {% else %}
+                            <div class="listing-placeholder" aria-hidden="true">♧</div>
+                        {% endif %}
+                        <h2>{{ worker.name }}</h2>
+
+                        <p><strong>Skill:</strong> {{ worker.skill }}</p>
+                        <p><strong>Location:</strong> {{ worker.location }}</p>
+                        <p><strong>Phone:</strong> {{ worker.phone }}</p>
+                        <p><strong>Rate per day:</strong> {% if worker.rate_per_day is not none %}₹{{ worker.rate_per_day }}{% else %}Not set{% endif %}</p>
+                        <p><strong>Payment:</strong>
+                            {% if worker.user and worker.user.formatted_online_payment_methods %}
+                                Cash and {{ worker.user.formatted_online_payment_methods|join(', ') }}
+                            {% else %}
+                                Cash only
+                            {% endif %}
+                        </p>
+                        {% if worker.average_rating %}
+                            <p><strong>Rating:</strong> <span class="review-stars">★ {{ worker.average_rating }}/5</span> · {{ worker.review_count }} review(s)</p>
+                        {% else %}
+                            <p><strong>Rating:</strong> No reviews yet</p>
+                        {% endif %}
+                        <a href="{{ url_for('worker_reviews', worker_id=worker.id) }}" class="btn">View reviews</a>
+
+                        {% if worker.user_id and session.get('user_role') == 'Farmer' %}
+                            <a href="{{ url_for('chat', other_user_id=worker.user_id) }}" class="btn">Message worker</a>
+                        {% endif %}
+
+                        {% if worker.available %}
+                            <p><span class="accepted">Available</span></p>
+                            <a href="{{ url_for('book_worker', worker_id=worker.id) }}" class="btn">Book Now</a>
+                        {% else %}
+                            <p><span class="rejected">Not Available</span></p>
+                        {% endif %}
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+        {% else %}
+            <div class="no-data">
+                <h2>No matching workers</h2>
+                <p>Try a different name, skill, location, or availability filter.</p>
+            </div>
+        {% endif %}
+
+        <div class="dashboard-footer">
+            <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+    </main>
+{% endblock %}

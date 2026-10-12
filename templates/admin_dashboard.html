@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Admin Console | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+        <div class="page-header">
+            <h1>AgroEase Admin</h1>
+            <p>Platform activity and moderation</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="{{ 'accepted' if category == 'success' else 'rejected' }}" role="status">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="admin-stats" aria-label="Platform totals">
+            <div class="admin-stat"><strong>{{ stats.total_users }}</strong><span>Total users</span></div>
+            <div class="admin-stat"><strong>{{ stats.farmers }}</strong><span>Farmers</span></div>
+            <div class="admin-stat"><strong>{{ stats.workers }}</strong><span>Workers</span></div>
+            <div class="admin-stat"><strong>{{ stats.owners }}</strong><span>Equipment owners</span></div>
+            <div class="admin-stat"><strong>{{ stats.worker_listings }}</strong><span>Worker listings</span></div>
+            <div class="admin-stat"><strong>{{ stats.tractors }}</strong><span>Tractors</span></div>
+            <div class="admin-stat"><strong>{{ stats.machinery }}</strong><span>Machinery</span></div>
+            <div class="admin-stat"><strong>{{ stats.bookings }}</strong><span>Total requests</span></div>
+            <div class="admin-stat"><strong>{{ stats.pending }}</strong><span>Pending</span></div>
+            <div class="admin-stat"><strong>{{ stats.accepted }}</strong><span>Accepted</span></div>
+            <div class="admin-stat"><strong>{{ stats.rejected }}</strong><span>Rejected</span></div>
+            <div class="admin-stat"><strong>{{ stats.reviews }}</strong><span>Reviews</span></div>
+            <div class="admin-stat"><strong>{{ stats.payments }}</strong><span>Payments</span></div>
+            <div class="admin-stat"><strong>₹{{ stats.successful_payments }}</strong><span>Successful payments</span></div>
+        </section>
+
+        <section class="dashboard-grid admin-data-grid" aria-label="Admin data">
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">👥</div><h2>Users</h2><p>Registered accounts and roles.</p><span class="admin-overview-count">{{ users|length }} accounts</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='users') }}">View user details</a>
+            </article>
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">🧑‍🌾</div><h2>Workers</h2><p>Worker listings and availability.</p><span class="admin-overview-count">{{ workers|length }} listings</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='workers') }}">View worker details</a>
+            </article>
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">🚜</div><h2>Tractors</h2><p>Tractor listings and rental rates.</p><span class="admin-overview-count">{{ tractors|length }} listings</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='tractors') }}">View tractor details</a>
+            </article>
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">⚙</div><h2>Machinery</h2><p>Machinery listings and rental rates.</p><span class="admin-overview-count">{{ machinery_items|length }} listings</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='machinery') }}">View machinery details</a>
+            </article>
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">📋</div><h2>Worker bookings</h2><p>Farmer-to-worker booking requests.</p><span class="admin-overview-count">{{ bookings|length }} bookings</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='worker-bookings') }}">View booking details</a>
+            </article>
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">🔑</div><h2>Tractor rentals</h2><p>Tractor rental requests and status.</p><span class="admin-overview-count">{{ tractor_rentals|length }} rentals</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='tractor-rentals') }}">View rental details</a>
+            </article>
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">🛠</div><h2>Machinery rentals</h2><p>Machinery rental requests and status.</p><span class="admin-overview-count">{{ machinery_rentals|length }} rentals</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='machinery-rentals') }}">View rental details</a>
+            </article>
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">⭐</div><h2>Reviews</h2><p>Farmer feedback and ratings.</p><span class="admin-overview-count">{{ reviews|length }} reviews</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='reviews') }}">View review details</a>
+            </article>
+            <article class="dashboard-card admin-overview-card">
+                <div class="card-icon" aria-hidden="true">₹</div><h2>Payments</h2><p>Transactions and payment status.</p><span class="admin-overview-count">{{ payments|length }} records</span><a class="dashboard-btn" href="{{ url_for('admin_records', section='payments') }}">View payment details</a>
+            </article>
+        </div>
+
+        <div class="dashboard-footer"><a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a></div>
+    </main>
+{% endblock %}

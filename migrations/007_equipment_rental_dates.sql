@@ -1,0 +1,7 @@
+ALTER TABLE tractor_rental
+ADD COLUMN IF NOT EXISTS start_date DATE,
+ADD COLUMN IF NOT EXISTS end_date DATE;
+
+ALTER TABLE machinery_rental
+ADD COLUMN IF NOT EXISTS start_date DATE,
+ADD COLUMN IF NOT EXISTS end_date DATE;

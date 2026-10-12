@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Review Machinery - AgroEase{% endblock %}
+{% block content %}
+<div class="container">
+
+        <h1>Review Machinery</h1>
+
+        <div class="machinery-card">
+
+            <h2>
+                {{ machinery.name }}
+            </h2>
+
+            <p>
+                <strong>Type:</strong>
+                {{ machinery.type }}
+            </p>
+
+            <p>
+                <strong>Rent Per Day:</strong>
+                ₹{{ machinery.rent_per_day }}
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                {{ machinery.location }}
+            </p>
+
+            <p>
+                <strong>Rental date:</strong>
+                {{ rental.rental_date }}
+            </p>
+
+            <form method="POST">
+                <input type="hidden" name="rental_id" value="{{ rental.id }}">
+
+                <label for="rating">
+                    Rating
+                </label>
+
+                <br><br>
+
+                <select id="rating"
+                        name="rating"
+                        required>
+
+                    <option value="">
+                        Select Rating
+                    </option>
+
+                    <option value="5">
+                        ⭐⭐⭐⭐⭐ 5
+                    </option>
+
+                    <option value="4">
+                        ⭐⭐⭐⭐☆ 4
+                    </option>
+
+                    <option value="3">
+                        ⭐⭐⭐☆☆ 3
+                    </option>
+
+                    <option value="2">
+                        ⭐⭐☆☆☆ 2
+                    </option>
+
+                    <option value="1">
+                        ⭐☆☆☆☆ 1
+                    </option>
+
+                </select>
+
+                <br><br>
+
+                <label for="comment">
+                    Your Review
+                </label>
+
+                <br><br>
+
+                <textarea id="comment"
+                          name="comment"
+                          rows="5"
+                          placeholder="Write your experience..."
+                          required></textarea>
+
+                <br><br>
+
+                <button type="submit">
+                    Submit Review
+                </button>
+
+            </form>
+
+        </div>
+
+        <br>
+
+        <a href="{{ url_for('my_machinery_rentals') }}">
+            <button type="button">
+                Back to My Machinery Rentals
+            </button>
+        </a>
+
+    </div>
+{% endblock %}

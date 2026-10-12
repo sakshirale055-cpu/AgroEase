@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | AgroEase{% endblock %}
+{% block content %}
+<main class="container dashboard-page">
+        <div class="dashboard-welcome">
+            <p class="eyebrow">Your AgroEase workspace</p>
+            <h1 class="dashboard-title">Welcome, {{ name }}</h1>
+            <p class="dashboard-subtitle">Your role is <strong>{{ role }}</strong>.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="{{ 'success-message' if category == 'success' else 'error-message' }}" role="status">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        {% if role == "Farmer" %}
+            <div class="section-heading dashboard-section-heading">
+                <h2>Plan your next field day</h2>
+                <p>Find the people and equipment you need, then keep your bookings organized.</p>
+            </div>
+            <section class="dashboard-grid" aria-label="Farmer services">
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">🧑‍🌾</div>
+                    <h2>Find Farm Workers</h2>
+                    <p>Connect with skilled people for seasonal and everyday farm work.</p>
+                    <a class="dashboard-btn" href="{{ url_for('workers') }}">Find workers</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">▤</div>
+                    <h2>My Bookings</h2>
+                    <p>Review the status and details of your worker bookings.</p>
+                    <a class="dashboard-btn" href="{{ url_for('my_bookings') }}">View bookings</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">🚜</div>
+                    <h2>Available Tractors</h2>
+                    <p>Compare local tractors and find a rental for your fields.</p>
+                    <a class="dashboard-btn" href="{{ url_for('tractors') }}">Browse tractors</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">⚙</div>
+                    <h2>Agricultural Machinery</h2>
+                    <p>Browse machinery and choose the right tool for the job.</p>
+                    <a class="dashboard-btn" href="{{ url_for('machinery') }}">Browse machinery</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">◷</div>
+                    <h2>My Tractor Rentals</h2>
+                    <p>Keep track of your tractor rental requests and dates.</p>
+                    <a class="dashboard-btn" href="{{ url_for('my_tractor_rentals') }}">View rentals</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">▧</div>
+                    <h2>My Machinery Rentals</h2>
+                    <p>Check the status of your machinery rental requests.</p>
+                    <a class="dashboard-btn" href="{{ url_for('my_machinery_rentals') }}">View rentals</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">₹</div>
+                    <h2>Payment History</h2>
+                    <p>See the payments associated with your service and rentals.</p>
+                    <a class="dashboard-btn" href="{{ url_for('payment_history') }}">View payments</a>
+                </article>
+            </section>
+        {% elif role == "Worker" %}
+            <div class="section-heading dashboard-section-heading">
+                <h2>Worker Dashboard</h2>
+                <p>Review incoming farm work and respond to booking requests.</p>
+            </div>
+            <section class="dashboard-grid" aria-label="Worker services">
+                {% if not worker %}
+                    <article class="dashboard-card">
+                        <div class="card-icon" aria-hidden="true">👤</div>
+                        <h2>Complete Worker Profile</h2>
+                        <p>Add your skills, daily rate, and location before accepting farm work.</p>
+                        <a class="dashboard-btn" href="{{ url_for('edit_profile') }}">Set up profile</a>
+                    </article>
+                {% endif %}
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">▤</div>
+                    <h2>Booking Requests</h2>
+                    <p>View pending work requests and accept or reject bookings from farmers.</p>
+                    <a class="dashboard-btn" href="{{ url_for('worker_dashboard') }}">View requests</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">✓</div>
+                    <h2>Accepted Bookings</h2>
+                    <p>Review the farmer and date for work requests you accepted.</p>
+                    <a class="dashboard-btn" href="{{ url_for('worker_dashboard') }}#accepted-bookings">View accepted bookings</a>
+                </article>
+                {% if worker %}
+                    <article class="dashboard-card">
+                        <div class="card-icon" aria-hidden="true">⭐</div>
+                        <h2>My Reviews</h2>
+                        <p>Read the ratings and feedback farmers left for your work.</p>
+                        <a class="dashboard-btn" href="{{ url_for('worker_reviews', worker_id=worker.id) }}">View my reviews</a>
+                    </article>
+                {% endif %}
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">₹</div>
+                    <h2>Payment History</h2>
+                    <p>Review payments recorded for your farm work bookings.</p>
+                    <a class="dashboard-btn" href="{{ url_for('payment_history') }}">View payments</a>
+                </article>
+            </section>
+        {% elif role == "Equipment Owner" %}
+            <h2>Equipment Owner Dashboard</h2>
+            <p>You can list tractors and agricultural machinery for rent.</p>
+            <div class="dashboard-grid">
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">🚜</div>
+                    <h2>Add Tractor</h2>
+                    <p>List a tractor for farmers to rent.</p>
+                    <a href="{{ url_for('add_tractor') }}" class="dashboard-btn">Add Tractor</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">⚙</div>
+                    <h2>Add Agricultural Machinery</h2>
+                    <p>List machinery and make it available for rental.</p>
+                    <a href="{{ url_for('add_machinery') }}" class="dashboard-btn">Add Agricultural Machinery</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">▤</div>
+                    <h2>Tractor Requests</h2>
+                    <p>Review and respond to farmers' tractor rental requests.</p>
+                    <a href="{{ url_for('owner_rentals') }}" class="dashboard-btn">View Tractor Rental Requests</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">▧</div>
+                    <h2>Machinery Requests</h2>
+                    <p>Review and respond to machinery rental requests.</p>
+                    <a href="{{ url_for('owner_machinery_rentals') }}" class="dashboard-btn">View Machinery Rental Requests</a>
+                </article>
+                <article class="dashboard-card">
+                    <div class="card-icon" aria-hidden="true">₹</div>
+                    <h2>Payment History</h2>
+                    <p>Review payments recorded for rentals of your equipment.</p>
+                    <a href="{{ url_for('payment_history') }}" class="dashboard-btn">View payments</a>
+                </article>
+            </div>
+
+            <section class="owner-inventory" aria-labelledby="owner-inventory-title">
+                <div class="owner-inventory-heading">
+                    <div>
+                        <p class="eyebrow">Equipment owner</p>
+                        <h3 id="owner-inventory-title">My Listings</h3>
+                    </div>
+                </div>
+                <div class="owner-inventory-table-wrap">
+                    <table class="owner-inventory-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Equipment</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Brand / Type</th>
+                                <th scope="col">Rent per day</th>
+                                <th scope="col">Location</th>
+                                <th scope="col">Reviews</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tractor in owner_tractors %}
+                                <tr>
+                                    <td>Tractor</td>
+                                    <td class="owner-inventory-name">{{ tractor.name }}</td>
+                                    <td>{{ tractor.brand }}</td>
+                                    <td>₹{{ tractor.rent_per_day }}</td>
+                                    <td>{{ tractor.location }}</td>
+                                    <td><a href="{{ url_for('tractor_reviews', tractor_id=tractor.id) }}" class="owner-edit-btn">View reviews</a></td>
+                                    <td><a href="{{ url_for('edit_tractor', tractor_id=tractor.id) }}" class="owner-edit-btn">Edit</a></td>
+                                </tr>
+                            {% endfor %}
+                            {% for item in owner_machinery %}
+                                <tr>
+                                    <td>Machinery</td>
+                                    <td class="owner-inventory-name">{{ item.name }}</td>
+                                    <td>{{ item.type }}</td>
+                                    <td>₹{{ item.rent_per_day }}</td>
+                                    <td>{{ item.location }}</td>
+                                    <td><a href="{{ url_for('machinery_reviews', machinery_id=item.id) }}" class="owner-edit-btn">View reviews</a></td>
+                                    <td><a href="{{ url_for('edit_machinery', machinery_id=item.id) }}" class="owner-edit-btn">Edit</a></td>
+                                </tr>
+                            {% endfor %}
+                            {% if not owner_tractors and not owner_machinery %}
+                                <tr><td colspan="7" class="owner-inventory-empty">No equipment listings yet.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        {% elif role == "Admin" %}
+            <h2>Admin Dashboard</h2>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn">Open admin console</a>
+        {% endif %}
+
+    </main>
+{% endblock %}

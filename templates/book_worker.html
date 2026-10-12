@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Book Worker | AgroEase{% endblock %}
+{% block content %}
+<h1>Book Farm Worker</h1>
+
+    <h2>{{ worker.name }}</h2>
+
+    <p>
+        <strong>Skill:</strong>
+        {{ worker.skill }}
+    </p>
+
+    <p>
+        <strong>Location:</strong>
+        {{ worker.location }}
+    </p>
+
+    <p>
+        <strong>Rate per day:</strong>
+        {% if worker.rate_per_day is not none %}₹{{ worker.rate_per_day }}{% else %}Not set{% endif %}
+    </p>
+
+    <form action="{{ url_for('book_worker', worker_id=worker.id) }}"
+          method="POST">
+
+        <label for="booking_date">
+            Select Booking Date
+        </label>
+
+        <input
+            type="date"
+            id="booking_date"
+            name="booking_date"
+            required
+        >
+
+        <br><br>
+
+        <button type="submit">
+            Confirm Booking
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="/workers">
+        Back to Workers
+    </a>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ item_type }} Rental Request | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+    <div class="page-header">
+        <h1>{{ item_type }} Rental Request</h1>
+        <p>Request #{{ rental.id }}</p>
+    </div>
+
+    <article class="rental-card">
+        <h2>{{ item.name }}</h2>
+        {% if kind == "tractor" %}
+            <p><strong>Brand:</strong> {{ item.brand }}</p>
+        {% else %}
+            <p><strong>Machinery Type:</strong> {{ item.type }}</p>
+        {% endif %}
+        <p><strong>Farmer:</strong> {{ rental.farmer.name }}</p>
+        <p><strong>Farmer Email:</strong> {{ rental.farmer.email }}</p>
+        <p><strong>Rental Dates:</strong> {{ rental.start_date or rental.rental_date }} to {{ rental.end_date or rental.start_date or rental.rental_date }}</p>
+        <p><strong>Rent Per Day:</strong> ₹{{ item.rent_per_day }}</p>
+        <p><strong>Location:</strong> {{ item.location }}</p>
+        <p><strong>Status:</strong>
+            {% if rental.status == "Accepted" or rental.status == "Completed" %}
+                <span class="accepted">{{ rental.status }}</span>
+            {% elif rental.status == "Rejected" %}
+                <span class="rejected">{{ rental.status }}</span>
+            {% else %}
+                <span class="pending">{{ rental.status }}</span>
+            {% endif %}
+        </p>
+
+        {% if rental.status == "Pending" %}
+            <div class="action-buttons">
+                <form method="POST" action="{{ url_for(accept_endpoint, rental_id=rental.id) }}">
+                    <button type="submit" class="btn btn-success">Accept</button>
+                </form>
+                <form method="POST" action="{{ url_for(reject_endpoint, rental_id=rental.id) }}">
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </form>
+            </div>
+        {% else %}
+            <p>This rental request has already been processed.</p>
+        {% endif %}
+    </article>
+
+    <div class="dashboard-footer">
+        <a href="{{ url_for(list_endpoint) }}" class="back-btn">Back to Rental Requests</a>
+    </div>
+</main>
+{% endblock %}

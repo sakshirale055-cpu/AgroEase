@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ other_user.name }} | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+        <div class="page-header">
+            <h1>{{ other_user.name }}</h1>
+            <p>{{ other_user.account_roles|join(', ') }}</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="rejected" role="alert">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <section class="chat-messages" aria-label="Conversation">
+            {% if messages %}
+                {% for message in messages %}
+                    <article class="chat-message {{ 'sent' if message.sender_id == current_user.id else 'received' }}">
+                        <p>{{ message.message }}</p>
+                        <time>{{ message.created_at|local_datetime }}</time>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p class="no-data">Start the conversation with {{ other_user.name }}.</p>
+            {% endif %}
+        </section>
+
+        <form class="chat-composer" method="POST" action="{{ url_for('chat', other_user_id=other_user.id) }}">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" maxlength="2000" required placeholder="Write a message..."></textarea>
+            <button type="submit" class="btn">Send message</button>
+        </form>
+
+        <div class="dashboard-footer">
+            <a href="{{ url_for('chats') }}" class="back-btn">All messages</a>
+            <a href="{{ url_for('dashboard') }}" class="back-btn">Dashboard</a>
+        </div>
+    </main>
+{% endblock %}

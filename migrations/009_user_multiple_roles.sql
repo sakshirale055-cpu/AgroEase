@@ -1,0 +1,12 @@
+ALTER TABLE "user"
+ADD COLUMN IF NOT EXISTS roles VARCHAR(200);
+
+UPDATE "user"
+SET roles = role
+WHERE roles IS NULL OR btrim(roles) = '';
+
+ALTER TABLE "user"
+ALTER COLUMN roles SET DEFAULT '';
+
+ALTER TABLE "user"
+ALTER COLUMN roles SET NOT NULL;

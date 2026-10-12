@@ -1,0 +1,8 @@
+ALTER TABLE worker
+ADD COLUMN IF NOT EXISTS image_filename VARCHAR(255);
+
+ALTER TABLE tractor
+ADD COLUMN IF NOT EXISTS image_filename VARCHAR(255);
+
+ALTER TABLE machinery
+ADD COLUMN IF NOT EXISTS image_filename VARCHAR(255);

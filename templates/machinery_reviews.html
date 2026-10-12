@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Machinery Reviews - AgroEase{% endblock %}
+{% block content %}
+<div class="container">
+
+        <h1>Machinery Reviews</h1>
+
+        <h2>{{ machinery.name }}</h2>
+
+        <p>
+            <strong>Type:</strong>
+            {{ machinery.type }}
+        </p>
+
+        <p>
+            <strong>Rent:</strong>
+            ₹{{ machinery.rent_per_day }}/day
+        </p>
+
+        <p>
+            <strong>Location:</strong>
+            {{ machinery.location }}
+        </p>
+
+        <hr>
+
+        {% if average_rating %}
+
+            <h2>
+                Rating:
+                {{ average_rating }}/5
+            </h2>
+
+            <p class="review-stars" aria-label="Average rating {{ average_rating }} out of 5">
+                {% for star in range(1, 6) %}
+                    {% if average_rating >= star %}★{% else %}☆{% endif %}
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ reviews|length }} Review(s)
+            </p>
+
+        {% else %}
+
+            <h2>
+                No reviews yet
+            </h2>
+
+            <p>
+                This machinery has not received any reviews.
+            </p>
+
+        {% endif %}
+
+        <hr>
+
+        <h2>Customer Reviews</h2>
+
+        {% if reviews %}
+
+            {% for review in reviews %}
+
+                <div class="card">
+
+                    <h3>
+                        {% if review.rating == 5 %}
+                            ⭐⭐⭐⭐⭐
+                        {% elif review.rating == 4 %}
+                            ⭐⭐⭐⭐☆
+                        {% elif review.rating == 3 %}
+                            ⭐⭐⭐☆☆
+                        {% elif review.rating == 2 %}
+                            ⭐⭐☆☆☆
+                        {% else %}
+                            ⭐☆☆☆☆
+                        {% endif %}
+
+                        {{ review.rating }}/5
+                    </h3>
+
+                    <p>
+                        "{{ review.comment }}"
+                    </p>
+
+                    <p>
+                        <strong>
+                            Reviewed by:
+                        </strong>
+
+                        {{ review.farmer.name }}
+                    </p>
+
+                </div>
+
+                <hr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>
+                No customer reviews available.
+            </p>
+
+        {% endif %}
+
+        <br>
+
+        {% if session.get('user_role') == 'Farmer' %}
+            <a href="{{ url_for('my_machinery_rentals') }}" class="btn">
+                Back to My Machinery Rentals
+            </a>
+        {% else %}
+            <a href="{{ url_for('machinery') }}" class="btn">
+                Back to Machinery
+            </a>
+        {% endif %}
+
+    </div>
+{% endblock %}

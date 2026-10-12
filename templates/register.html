@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Register | AgroEase{% endblock %}
+{% block content %}
+<main class="auth-page">
+        <section class="auth-card">
+            <p class="eyebrow">Join the community</p>
+            <h1>Create your account</h1>
+            <p class="auth-description">Connect with local farm services and equipment.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <p class="{{ 'success-message' if category == 'success' else 'error-message' }}" role="alert">{{ message }}</p>
+                {% endfor %}
+            {% endwith %}
+
+            <form action="/register" method="POST" class="auth-form">
+                <div class="form-field">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your full name" autocomplete="name" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="email">Email</label>
+                    <div class="input-with-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6" /></svg>
+                        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2" /></svg>
+                        <input type="password" id="password" name="password" placeholder="Create a password" autocomplete="new-password" required>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="confirm_password">Confirm password</label>
+                    <div class="input-with-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2" /></svg>
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" autocomplete="new-password" required>
+                    </div>
+                </div>
+
+                <fieldset class="form-field">
+                    <legend>Select all roles you need</legend>
+                    <label><input type="checkbox" name="roles" value="Farmer"> Farmer</label>
+                    <label><input type="checkbox" name="roles" value="Worker"> Worker</label>
+                    <label><input type="checkbox" name="roles" value="Equipment Owner"> Equipment Owner</label>
+                    <small>You can switch between selected roles from your dashboard.</small>
+                </fieldset>
+
+                <button type="submit" class="btn auth-submit">Register</button>
+            </form>
+
+            <p class="auth-switch">Already have an account? <a href="/login">Login here</a></p>
+        </section>
+    </main>
+{% endblock %}

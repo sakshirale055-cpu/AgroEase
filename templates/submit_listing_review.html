@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Review {{ listing_kind }} | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+    <div class="page-header">
+        <h1>Review {{ listing_kind }}</h1>
+        <p>{{ listing.name }}</p>
+    </div>
+
+    <form method="POST" class="review-form">
+        <input type="hidden" name="{{ relationship_id_field }}" value="{{ rental.id }}">
+
+        <label for="rating">Rating</label>
+        <select id="rating" name="rating" required>
+            <option value="">Select a rating</option>
+            {% for rating in range(5, 0, -1) %}
+                <option value="{{ rating }}">{{ rating }} star{{ '' if rating == 1 else 's' }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="comment">Your review</label>
+        <textarea id="comment" name="comment" maxlength="2000" required></textarea>
+
+        <button type="submit" class="btn">Submit review</button>
+        {% if listing_kind == 'Tractor' %}
+            {% set cancel_url = url_for('my_tractor_rentals') %}
+        {% elif listing_kind == 'Machinery' %}
+            {% set cancel_url = url_for('my_machinery_rentals') %}
+        {% else %}
+            {% set cancel_url = url_for('my_bookings') %}
+        {% endif %}
+        <a href="{{ cancel_url }}" class="back-btn">Cancel</a>
+    </form>
+</main>
+{% endblock %}

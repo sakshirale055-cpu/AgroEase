@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}My Machinery Rentals | AgroEase{% endblock %}
+{% block content %}
+<div class="container">
+
+        <h1>My Machinery Rentals</h1>
+
+        <p>
+            Here you can check the status of your machinery rental requests.
+        </p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="{{ 'success-message' if category == 'success' else 'error-message' }}" role="status">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        {% if rentals %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rental ID</th>
+                            <th>Machinery</th>
+                            <th>Type</th>
+                            <th>Rent Per Day</th>
+                            <th>Location</th>
+                            <th>Rental Dates</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rental in rentals %}
+                            <tr>
+                                <td>{{ rental.id }}</td>
+                                <td>{{ rental.machinery.name }}</td>
+                                <td>{{ rental.machinery.type }}</td>
+                                <td>₹{{ rental.machinery.rent_per_day }}</td>
+                                <td>{{ rental.machinery.location }}</td>
+                                <td>{{ rental.start_date or rental.rental_date }} to {{ rental.end_date or rental.start_date or rental.rental_date }}</td>
+                                <td>
+                                    {% if rental.status == "Accepted" or rental.status == "Completed" %}
+                                        <span class="accepted">{{ rental.status }}</span>
+                                    {% elif rental.status == "Rejected" %}
+                                        <span class="rejected">{{ rental.status }}</span>
+                                    {% else %}
+                                        <span class="pending">{{ rental.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="table-actions">
+                                        {% if rental.status in ["Accepted", "Completed"] %}
+                                            {% if rental.payment_record and rental.payment_record.payment_status == "Successful" %}
+                                                <span class="accepted">Paid</span>
+                                            {% else %}
+                                                <a href="{{ url_for('start_payment', kind='machinery', rental_id=rental.id) }}" class="btn">Pay</a>
+                                            {% endif %}
+                                        {% endif %}
+                                        <a href="{{ url_for('machinery_rental_details', rental_id=rental.id) }}" class="btn">View Details</a>
+                                        <a href="{{ url_for('machinery_reviews', machinery_id=rental.machinery.id) }}" class="btn">View Reviews</a>
+                                        {% if rental.status in ["Accepted", "Completed"] and not rental.review %}
+                                            <a href="{{ url_for('review_machinery', machinery_id=rental.machinery.id, rental_id=rental.id) }}" class="btn">Review Machinery</a>
+                                        {% elif rental.review %}
+                                            <span class="accepted">Review submitted</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% else %}
+
+            <div class="no-data">
+
+                <h2>No Machinery Rentals</h2>
+
+                <p>
+                    You have not sent any machinery rental requests yet.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        <div class="dashboard-footer">
+            <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Messages | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+        <div class="page-header">
+            <h1>Messages</h1>
+            <p>Your recent conversations</p>
+        </div>
+
+        {% if conversations %}
+            <div class="rental-container">
+                {% for partner, latest_message in conversations %}
+                    <article class="rental-card">
+                        <h2>{{ partner.name }}</h2>
+                        <p><span class="badge">{{ partner.role }}</span></p>
+                        <p>{{ latest_message.message }}</p>
+                        <p class="location">{{ latest_message.created_at|local_datetime }}</p>
+                        <a href="{{ url_for('chat', other_user_id=partner.id) }}" class="btn">Open conversation</a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-data">
+                <h2>No conversations yet</h2>
+                <p>Contact a worker or equipment owner from a listing to start a conversation.</p>
+            </div>
+        {% endif %}
+
+        <div class="dashboard-footer">
+            <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+    </main>
+{% endblock %}

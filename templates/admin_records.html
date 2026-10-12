@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | Admin | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+    <div class="page-header">
+        <h1>{{ title }}</h1>
+        <p>{{ description }} · {{ records|length }} records</p>
+    </div>
+
+    <section class="admin-records-page">
+        <div class="table-wrap">
+            <table>
+                {% if section == "users" %}
+                    <thead><tr><th>Name</th><th>Email</th><th>Roles</th><th>Phone</th><th>Location</th></tr></thead>
+                    <tbody>{% for user in records %}<tr><td>{{ user.name }}</td><td>{{ user.email }}</td><td>{{ user.account_roles|join(', ') }}</td><td>{{ user.phone or 'Not set' }}</td><td>{{ user.location or 'Not set' }}</td></tr>{% else %}<tr><td colspan="5">No users</td></tr>{% endfor %}</tbody>
+                {% elif section == "workers" %}
+                    <thead><tr><th>Name</th><th>Skill</th><th>Phone</th><th>Location</th><th>Daily rate</th><th>Availability</th><th>Action</th></tr></thead>
+                    <tbody>{% for worker in records %}<tr><td>{{ worker.name }}</td><td>{{ worker.skill }}</td><td>{{ worker.phone }}</td><td>{{ worker.location }}</td><td>{{ '₹' ~ worker.rate_per_day if worker.rate_per_day is not none else 'Not set' }}</td><td>{{ 'Available' if worker.available else 'Unavailable' }}</td><td>{% if not worker.bookings %}<form method="POST" action="{{ url_for('admin_delete_worker', worker_id=worker.id) }}"><button type="submit" class="btn-danger">Delete listing</button></form>{% else %}Has booking history{% endif %}</td></tr>{% else %}<tr><td colspan="7">No worker listings</td></tr>{% endfor %}</tbody>
+                {% elif section == "tractors" %}
+                    <thead><tr><th>Name</th><th>Brand</th><th>Rent/day</th><th>Location</th><th>Availability</th><th>Action</th></tr></thead>
+                    <tbody>{% for tractor in records %}<tr><td>{{ tractor.name }}</td><td>{{ tractor.brand }}</td><td>₹{{ tractor.rent_per_day }}</td><td>{{ tractor.location }}</td><td>{{ 'Available' if tractor.available else 'Unavailable' }}</td><td>{% if not tractor.rentals %}<form method="POST" action="{{ url_for('admin_delete_equipment', kind='tractor', item_id=tractor.id) }}"><button type="submit" class="btn-danger">Delete listing</button></form>{% else %}Has rental history{% endif %}</td></tr>{% else %}<tr><td colspan="6">No tractors</td></tr>{% endfor %}</tbody>
+                {% elif section == "machinery" %}
+                    <thead><tr><th>Name</th><th>Type</th><th>Rent/day</th><th>Location</th><th>Availability</th><th>Action</th></tr></thead>
+                    <tbody>{% for item in records %}<tr><td>{{ item.name }}</td><td>{{ item.type }}</td><td>₹{{ item.rent_per_day }}</td><td>{{ item.location }}</td><td>{{ 'Available' if item.available else 'Unavailable' }}</td><td>{% if not item.rentals %}<form method="POST" action="{{ url_for('admin_delete_equipment', kind='machinery', item_id=item.id) }}"><button type="submit" class="btn-danger">Delete listing</button></form>{% else %}Has rental history{% endif %}</td></tr>{% else %}<tr><td colspan="6">No machinery</td></tr>{% endfor %}</tbody>
+                {% elif section == "worker-bookings" %}
+                    <thead><tr><th>Farmer</th><th>Worker</th><th>Skill</th><th>Date</th><th>Status</th></tr></thead>
+                    <tbody>{% for booking in records %}<tr><td>{{ booking.farmer.name }}</td><td>{{ booking.worker.name }}</td><td>{{ booking.worker.skill }}</td><td>{{ booking.booking_date }}</td><td>{{ booking.status }}</td></tr>{% else %}<tr><td colspan="5">No worker bookings</td></tr>{% endfor %}</tbody>
+                {% elif section == "tractor-rentals" %}
+                    <thead><tr><th>Farmer</th><th>Tractor</th><th>Owner</th><th>Date range</th><th>Rent/day</th><th>Status</th></tr></thead>
+                    <tbody>{% for rental in records %}<tr><td>{{ rental.farmer.name }}</td><td>{{ rental.tractor.name }}</td><td>{{ rental.tractor.owner.name }}</td><td>{{ rental.start_date or rental.rental_date }} to {{ rental.end_date or rental.start_date or rental.rental_date }}</td><td>₹{{ rental.tractor.rent_per_day }}</td><td>{{ rental.status }}</td></tr>{% else %}<tr><td colspan="6">No tractor rentals</td></tr>{% endfor %}</tbody>
+                {% elif section == "machinery-rentals" %}
+                    <thead><tr><th>Farmer</th><th>Machinery</th><th>Owner</th><th>Date range</th><th>Rent/day</th><th>Status</th></tr></thead>
+                    <tbody>{% for rental in records %}<tr><td>{{ rental.farmer.name }}</td><td>{{ rental.machinery.name }}</td><td>{{ rental.machinery.owner.name }}</td><td>{{ rental.start_date or rental.rental_date }} to {{ rental.end_date or rental.start_date or rental.rental_date }}</td><td>₹{{ rental.machinery.rent_per_day }}</td><td>{{ rental.status }}</td></tr>{% else %}<tr><td colspan="6">No machinery rentals</td></tr>{% endfor %}</tbody>
+                {% elif section == "reviews" %}
+                    <thead><tr><th>Listing type</th><th>Listing</th><th>Farmer</th><th>Rating</th><th>Comment</th><th>Action</th></tr></thead>
+                    <tbody>{% for review in records %}<tr><td>{% if review.worker %}Worker{% elif review.tractor %}Tractor{% else %}Machinery{% endif %}</td><td>{% if review.worker %}{{ review.worker.name }}{% elif review.tractor %}{{ review.tractor.name }}{% elif review.machinery %}{{ review.machinery.name }}{% else %}Listing unavailable{% endif %}</td><td>{{ review.farmer.name }}</td><td>{{ review.rating }}/5</td><td>{{ review.comment }}</td><td><form method="POST" action="{{ url_for('admin_delete_review', review_id=review.id) }}"><button type="submit" class="btn-danger">Delete review</button></form></td></tr>{% else %}<tr><td colspan="6">No reviews</td></tr>{% endfor %}</tbody>
+                {% elif section == "payments" %}
+                    <thead><tr><th>Payment</th><th>For</th><th>Farmer</th><th>Method</th><th>Amount</th><th>Status</th><th>Transaction ID</th><th>Date</th></tr></thead>
+                    <tbody>
+                        {% for payment in records %}
+                            <tr>
+                                <td>#{{ payment.id }}</td>
+                                <td>{% if payment.tractor_rental %}Tractor rental: {{ payment.tractor_rental.tractor.name }}{% elif payment.machinery_rental %}Machinery rental: {{ payment.machinery_rental.machinery.name }}{% elif payment.booking %}Worker booking #{{ payment.booking.id }}{% else %}Related record unavailable{% endif %}</td>
+                                <td>{{ payment.farmer.name }}</td>
+                                <td>{{ payment.payment_method|replace(' (Demo)', '') }}</td>
+                                <td>₹{{ payment.amount }}</td>
+                                <td><span class="{{ 'accepted' if payment.payment_status == 'Successful' else 'rejected' if payment.payment_status == 'Failed' else 'pending' }}">{{ payment.payment_status }}</span></td>
+                                <td>{{ payment.transaction_id or '—' }}</td>
+                                <td>{{ payment.created_at|local_datetime }}</td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="8">No payments</td></tr>
+                        {% endfor %}
+                    </tbody>
+                {% endif %}
+            </table>
+        </div>
+    </section>
+
+    <div class="dashboard-footer">
+        <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Back to Admin Dashboard</a>
+    </div>
+</main>
+{% endblock %}

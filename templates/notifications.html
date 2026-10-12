@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Notifications | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+        <div class="page-header">
+            <h1>Notifications</h1>
+            <p>Updates about your messages, bookings, rentals, and reviews.</p>
+        </div>
+
+        {% if notifications %}
+            <div class="rental-container">
+                {% for notification in notifications %}
+                    <article class="rental-card">
+                        <p>
+                            {% if notification.is_read %}
+                                <span class="badge">Read</span>
+                            {% else %}
+                                <span class="pending">New</span>
+                            {% endif %}
+                            <span class="badge">{{ notification.notification_type.replace('_', ' ')|title }}</span>
+                        </p>
+                        <p>{{ notification.message }}</p>
+                        <p class="location">{{ notification.created_at|local_datetime }}</p>
+                        {% if notification.notification_type == "new_message" %}
+                            <a href="{{ url_for('chats') }}" class="btn">Open messages</a>
+                        {% endif %}
+                        {% if not notification.is_read %}
+                            <form method="POST" action="{{ url_for('mark_notification_read', notification_id=notification.id) }}">
+                                <button type="submit" class="btn">Mark as read</button>
+                            </form>
+                        {% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-data">
+                <h2>You are all caught up</h2>
+                <p>New message, booking, and rental updates will appear here.</p>
+            </div>
+        {% endif %}
+
+        <div class="dashboard-footer">
+            <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+    </main>
+{% endblock %}

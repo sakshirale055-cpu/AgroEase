@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}AgroEase | Smart Agriculture{% endblock %}
+{% block content %}
+<main class="home-page">
+    <section class="hero home-hero">
+        <div class="hero-content">
+            <p class="eyebrow">Better tools. Stronger harvests.</p>
+            <h1>Farming moves forward, together.</h1>
+            <p>Find skilled workers, tractors and agricultural machinery for the work ahead.</p>
+            <div class="hero-actions">
+                <a href="#services" class="btn">Explore services <span aria-hidden="true">↓</span></a>
+                <a href="{{ url_for('register') }}" class="btn hero-secondary">Join AgroEase <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
+        <a class="hero-scroll" href="#services" aria-label="Scroll to services"><span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section id="services" class="offer-section">
+        <div class="home-section-intro">
+            <p class="eyebrow">Explore the features</p>
+            <h2>What We Offer</h2>
+            <p>Practical farm services, connected in one place.</p>
+        </div>
+
+        <div class="offer-grid">
+            <a class="offer-card" href="{{ url_for('workers') }}">
+                <span class="offer-card-icon" aria-hidden="true">🧑‍🌾</span>
+                <h3>Farm Workers</h3>
+                <p>Find available workers by skill and location, then send a booking request.</p>
+                <span class="offer-card-action">Find workers <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="offer-card" href="{{ url_for('tractors') }}">
+                <span class="offer-card-icon" aria-hidden="true">🚜</span>
+                <h3>Tractors</h3>
+                <p>Compare tractor rates and locations to find the right rental for your farm.</p>
+                <span class="offer-card-action">Explore tractors <span aria-hidden="true">→</span></span>
+            </a>
+            <a class="offer-card" href="{{ url_for('machinery') }}">
+                <span class="offer-card-icon" aria-hidden="true">⚙</span>
+                <h3>Machinery</h3>
+                <p>Browse nearby agricultural equipment, rental details and available reviews.</p>
+                <span class="offer-card-action">Browse machinery <span aria-hidden="true">→</span></span>
+            </a>
+        </div>
+    </section>
+
+    <section class="how-section">
+        <div class="how-inner">
+            <div class="how-visual">
+                <img src="{{ url_for('static', filename='images/homepage.webp') }}" alt="Tractor working across a green field">
+                <div class="how-image-label"><span class="status-dot" aria-hidden="true"></span> Services for the season ahead</div>
+            </div>
+            <div class="how-copy">
+                <p class="eyebrow">Simple by design</p>
+                <h2>How AgroEase Works</h2>
+                <p class="how-intro">From finding a service to following a request, keep the next step clear.</p>
+                <ol class="how-steps">
+                    <li><span>01</span><div><h3>Create an Account</h3><p>Register with your role to get started on AgroEase.</p></div></li>
+                    <li><span>02</span><div><h3>Find Workers or Equipment</h3><p>Browse workers, tractors or machinery that fit your needs.</p></div></li>
+                    <li><span>03</span><div><h3>Send a Booking Request</h3><p>Choose a service and send your request to the worker or equipment owner.</p></div></li>
+                </ol>
+                <a href="{{ url_for('register') }}" class="text-link how-link">Get started <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
+    </section>
+
+    <section class="audience-section">
+        <div class="home-section-intro">
+            <p class="eyebrow">One platform, many ways to grow</p>
+            <h2>Made for the people behind every harvest</h2>
+        </div>
+        <div class="audience-grid">
+            <article class="audience-card">
+                <span class="audience-number">01</span>
+                <h3>For farmers</h3>
+                <p>Find workers and request the equipment your field work needs.</p>
+                <a href="{{ url_for('register') }}" class="text-link">Create a farmer account <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="audience-card">
+                <span class="audience-number">02</span>
+                <h3>For workers</h3>
+                <p>Show your skills and connect with nearby farm work opportunities.</p>
+                <a href="{{ url_for('register') }}" class="text-link">Join as a worker <span aria-hidden="true">→</span></a>
+            </article>
+            <article class="audience-card">
+                <span class="audience-number">03</span>
+                <h3>For equipment owners</h3>
+                <p>List tractors and machinery for farmers looking to rent.</p>
+                <a href="{{ url_for('register') }}" class="text-link">List your equipment <span aria-hidden="true">→</span></a>
+            </article>
+        </div>
+    </section>
+
+    <section class="home-cta">
+        <div>
+            <p class="eyebrow">Your next field job starts here</p>
+            <h2>Find what your farm needs.</h2>
+            <p>Explore local workers, tractors and agricultural machinery on AgroEase.</p>
+        </div>
+        <a href="{{ url_for('workers') }}" class="btn cta-button">Find workers <span aria-hidden="true">→</span></a>
+    </section>
+</main>
+{% endblock %}

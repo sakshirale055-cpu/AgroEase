@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}My Tractor Rentals | AgroEase{% endblock %}
+{% block content %}
+<h1>My Tractor Rentals</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <p class="{{ 'success-message' if category == 'success' else 'error-message' }}" role="status">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    {% if rentals %}
+
+    <table>
+
+        <tr>
+            <th>Rental ID</th>
+            <th>Tractor Name</th>
+            <th>Brand</th>
+            <th>Rent Per Day</th>
+            <th>Location</th>
+            <th>Rental Dates</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Reviews</th>
+        </tr>
+
+        {% for rental in rentals %}
+
+        <tr>
+            <td>{{ rental.id }}</td>
+
+            <td>{{ rental.tractor.name }}</td>
+
+            <td>{{ rental.tractor.brand }}</td>
+
+            <td>₹{{ rental.tractor.rent_per_day }}</td>
+
+            <td>{{ rental.tractor.location }}</td>
+
+            <td>{{ rental.start_date or rental.rental_date }} to {{ rental.end_date or rental.start_date or rental.rental_date }}</td>
+
+            <td>
+                {% if rental.status == "Accepted" %}
+                    <span class="accepted">
+                        {{ rental.status }}
+                    </span>
+
+                {% elif rental.status == "Rejected" %}
+                    <span class="rejected">
+                        {{ rental.status }}
+                    </span>
+
+                {% else %}
+                    <span class="pending">
+                        {{ rental.status }}
+                    </span>
+                {% endif %}
+            </td>
+            <td>
+                {% if rental.status in ["Accepted", "Completed"] %}
+                    {% if rental.payment_record and rental.payment_record.payment_status == "Successful" %}
+                        <span class="accepted">Paid</span>
+                    {% else %}
+                        <a href="{{ url_for('start_payment', kind='tractor', rental_id=rental.id) }}" class="btn">Pay</a>
+                    {% endif %}
+                {% else %}
+                    Not available yet
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('tractor_reviews', tractor_id=rental.tractor.id) }}" class="btn">View reviews</a>
+                {% if rental.status in ["Accepted", "Completed"] and not rental.review %}
+                    <a href="{{ url_for('submit_listing_review', kind='tractor', item_id=rental.tractor.id, rental_id=rental.id) }}" class="btn">Review tractor</a>
+                {% elif rental.review %}
+                    <span class="accepted">Review submitted</span>
+                {% endif %}
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+
+        <p>No tractor rentals found.</p>
+
+    {% endif %}
+
+    <br>
+
+    <a href="{{ url_for('dashboard') }}">
+        <button type="button">
+            Back to Dashboard
+        </button>
+    </a>
+    <a href="{{ url_for('payment_history') }}" class="back-btn">Payment history</a>
+{% endblock %}

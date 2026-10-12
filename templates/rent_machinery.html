@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Rent Machinery - AgroEase{% endblock %}
+{% block content %}
+<div class="container">
+
+        <h1>Rent Agricultural Machinery</h1>
+
+        <h2>{{ machinery.name }}</h2>
+
+        <p>
+            <strong>Type:</strong>
+            {{ machinery.type }}
+        </p>
+
+        <p>
+            <strong>Rent Per Day:</strong>
+            ₹{{ machinery.rent_per_day }}
+        </p>
+
+        <p>
+            <strong>Location:</strong>
+            {{ machinery.location }}
+        </p>
+
+        <form method="POST">
+
+            <label for="start_date">Start date</label>
+            <input type="date" id="start_date" name="start_date" min="{{ available_from }}" required>
+
+            <label for="end_date">End date</label>
+            <input type="date" id="end_date" name="end_date" min="{{ available_from }}" required>
+
+            <br><br>
+
+            <button type="submit">
+                Send Rental Request
+            </button>
+
+        </form>
+
+        <br>
+
+        <a href="{{ url_for('machinery') }}">
+            Back to Machinery
+        </a>
+
+    </div>
+{% endblock %}

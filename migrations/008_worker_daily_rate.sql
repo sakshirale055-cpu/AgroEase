@@ -1,0 +1,2 @@
+ALTER TABLE worker
+ADD COLUMN IF NOT EXISTS rate_per_day NUMERIC(10, 2);

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ listing_kind }} Reviews | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+    <div class="page-header">
+        <h1>{{ listing_kind }} Reviews</h1>
+        <p>{{ listing.name }}</p>
+        {% if average_rating %}
+            <p class="review-stars" aria-label="Average rating {{ average_rating }} out of 5">
+                {% for star in range(1, 6) %}{{ '★' if average_rating >= star else '☆' }}{% endfor %}
+                {{ average_rating }}/5 · {{ reviews|length }} review(s)
+            </p>
+        {% else %}
+            <p>No reviews yet.</p>
+        {% endif %}
+    </div>
+
+    {% if reviews %}
+        <div class="review-list">
+            {% for review in reviews %}
+                <article class="card">
+                    <h2 class="review-stars" aria-label="{{ review.rating }} out of 5 stars">
+                        {% for star in range(1, 6) %}{{ '★' if review.rating >= star else '☆' }}{% endfor %}
+                        {{ review.rating }}/5
+                    </h2>
+                    <p>{{ review.comment }}</p>
+                    <p><strong>Reviewed by:</strong> {{ review.farmer.name }}</p>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-data"><p>No customer reviews available yet.</p></div>
+    {% endif %}
+
+    <div class="dashboard-footer">
+        <a href="{{ back_url }}" class="back-btn">Back</a>
+        <a href="{{ url_for('dashboard') }}" class="back-btn">Dashboard</a>
+    </div>
+</main>
+{% endblock %}

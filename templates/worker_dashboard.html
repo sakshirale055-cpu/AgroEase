@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Worker Dashboard | AgroEase{% endblock %}
+{% block content %}
+<main class="container dashboard-page">
+<h1 class="dashboard-title">Worker Dashboard</h1>
+
+    <h2>Booking Requests</h2>
+
+    {% if bookings %}
+
+    <table>
+
+        <tr>
+            <th>Booking ID</th>
+            <th>Farmer Name</th>
+            <th>Worker Name</th>
+            <th>Skill</th>
+            <th>Location</th>
+            <th>Booking Date</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
+        {% for booking in bookings %}
+
+        <tr>
+            <td>{{ booking.id }}</td>
+
+            <td>{{ booking.farmer.name }}</td>
+
+            <td>{{ booking.worker.name }}</td>
+
+            <td>{{ booking.worker.skill }}</td>
+
+            <td>{{ booking.worker.location }}</td>
+
+            <td>{{ booking.booking_date }}</td>
+
+            <td>{{ booking.status }}</td>
+
+            <td>
+                <form action="{{ url_for('accept_booking', booking_id=booking.id) }}"
+                      method="POST"
+                      style="display:inline;">
+
+                    <button type="submit">
+                        Accept
+                    </button>
+                </form>
+
+                <form action="{{ url_for('reject_booking', booking_id=booking.id) }}"
+                      method="POST"
+                      style="display:inline;">
+
+                    <button type="submit">
+                        Reject
+                    </button>
+                </form>
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+
+        <p>No pending booking requests.</p>
+
+    {% endif %}
+
+    <section id="accepted-bookings" aria-labelledby="accepted-bookings-heading">
+        <h2 id="accepted-bookings-heading">Accepted Booking Details</h2>
+        {% if accepted_bookings %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Farmer</th>
+                            <th>Work Type</th>
+                            <th>Location</th>
+                            <th>Booking Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in accepted_bookings %}
+                            <tr>
+                                <td>{{ booking.id }}</td>
+                                <td>{{ booking.farmer.name }}</td>
+                                <td>{{ booking.worker.skill }}</td>
+                                <td>{{ booking.worker.location }}</td>
+                                <td>{{ booking.booking_date }}</td>
+                                <td><span class="accepted">{{ booking.status }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>No accepted booking requests yet.</p>
+        {% endif %}
+    </section>
+
+    <br>
+
+    <a href="{{ url_for('dashboard') }}">
+        <button>Back to Dashboard</button>
+    </a>
+</main>
+{% endblock %}

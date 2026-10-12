@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}My Bookings - AgroEase{% endblock %}
+{% block content %}
+<h1>My Bookings</h1>
+
+    {% if bookings %}
+        <table>
+            <tr>
+                <th>Booking ID</th>
+                <th>Worker Name</th>
+                <th>Work Type</th>
+                <th>Location</th>
+                <th>Booking Date</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Reviews</th>
+            </tr>
+
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.id }}</td>
+                <td>{{ booking.worker.name }}</td>
+                <td>{{ booking.worker.skill }}</td>
+                <td>{{ booking.worker.location }}</td>
+                <td>{{ booking.booking_date }}</td>
+                <td class="
+                    {% if booking.status == 'Accepted' %}
+                        accepted
+                    {% elif booking.status == 'Rejected' %}
+                        rejected
+                    {% else %}
+                        pending
+                    {% endif %}
+                    ">
+                        {{ booking.status }}
+                </td>
+                <td>
+                    {% if booking.status == 'Accepted' and booking.worker.rate_per_day %}
+                        {% if booking.payment_record and booking.payment_record.payment_status == 'Successful' %}
+                            <span class="accepted">Paid</span>
+                        {% else %}
+                            <a href="{{ url_for('start_payment', kind='worker', rental_id=booking.id) }}" class="btn">Pay</a>
+                        {% endif %}
+                    {% elif booking.status == 'Accepted' %}
+                        Worker rate not set
+                    {% else %}
+                        Not available yet
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('worker_reviews', worker_id=booking.worker.id) }}" class="btn">View reviews</a>
+                    {% if booking.status in ["Accepted", "Completed"] and not booking.review %}
+                        <a href="{{ url_for('submit_listing_review', kind='worker', item_id=booking.worker.id, booking_id=booking.id) }}" class="btn">Review worker</a>
+                    {% elif booking.review %}
+                        <span class="accepted">Review submitted</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No bookings found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('dashboard') }}" class="back-btn">
+        Back to Dashboard
+    </a>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+        <div class="page-header">
+            <h1>Edit Profile</h1>
+            <p>Update your contact information and listing details.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="{{ 'accepted' if category == 'success' else 'rejected' }}" role="alert">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('edit_profile') }}" enctype="multipart/form-data">
+            <label for="name">Full name</label>
+            <input id="name" name="name" type="text" value="{{ request.form.get('name', user.name) }}" maxlength="100" required>
+
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" value="{{ request.form.get('phone', user.phone or '') }}" maxlength="20" required>
+
+            <label for="location">Location</label>
+            <input id="location" name="location" type="text" value="{{ request.form.get('location', user.location or '') }}" maxlength="100" required>
+
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Role:</strong> {{ role }}</p>
+            {% set selected_payment_methods = request.form.getlist('online_payment_methods') if request.method == 'POST' else user.available_online_payment_methods %}
+
+            {% if role == 'Worker' %}
+                <label for="skill">Main skill</label>
+                <input id="skill" name="skill" type="text" value="{{ request.form.get('skill', worker.skill if worker else '') }}" maxlength="100" required>
+
+                <label for="rate_per_day">Daily rate (₹)</label>
+                <input id="rate_per_day" name="rate_per_day" type="number" min="0.01" step="0.01" value="{{ request.form.get('rate_per_day', worker.rate_per_day if worker and worker.rate_per_day is not none else '') }}" required>
+
+                <label for="available">Availability</label>
+                <select id="available" name="available" required>
+                    <option value="true" {% if (request.form.get('available', 'true' if not worker or worker.available else 'false')) == 'true' %}selected{% endif %}>Available</option>
+                    <option value="false" {% if (request.form.get('available', 'true' if not worker or worker.available else 'false')) == 'false' %}selected{% endif %}>Unavailable</option>
+                </select>
+
+                <label for="image">Profile image (optional)</label>
+                <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+            {% endif %}
+
+            {% if role in ['Worker', 'Equipment Owner'] %}
+                <section class="profile-payment-settings">
+                    <h2>Payment options</h2>
+                    <p>Cash is always available. Select any online demo methods you accept; leave all unchecked for Cash only.</p>
+
+                    <fieldset class="profile-payment-methods">
+                        <legend>Online payment methods</legend>
+                        <label>
+                            <input type="checkbox" name="online_payment_methods" value="net_banking"
+                                {% if 'net_banking' in selected_payment_methods %}checked{% endif %}>
+                            Net Banking
+                        </label>
+                        <label>
+                            <input type="checkbox" name="online_payment_methods" value="debit_card"
+                                {% if 'debit_card' in selected_payment_methods %}checked{% endif %}>
+                            Debit Card
+                        </label>
+                        <label>
+                            <input type="checkbox" name="online_payment_methods" value="qr_code"
+                                {% if 'qr_code' in selected_payment_methods %}checked{% endif %}>
+                            QR Code
+                        </label>
+                    </fieldset>
+
+                    <div class="profile-payment-fields" data-payment-method-fields="net_banking">
+                        <label for="bank_name">Bank name</label>
+                        <input id="bank_name" name="bank_name" type="text" maxlength="100"
+                            value="{{ request.form.get('bank_name', user.bank_name or '') }}">
+
+                        <label for="bank_account_number">Bank account number</label>
+                        <input id="bank_account_number" name="bank_account_number" type="text" inputmode="numeric" maxlength="34"
+                            value="{{ request.form.get('bank_account_number', user.bank_account_number or '') }}">
+                    </div>
+
+                    <div class="profile-payment-fields" data-payment-method-fields="debit_card">
+                        <p class="payment-demo-warning">use a made-up six-digit number.</p>
+                        <label for="demo_cardholder_name">Cardholder name</label>
+                        <input id="demo_cardholder_name" name="demo_cardholder_name" type="text" maxlength="100"
+                            value="{{ request.form.get('demo_cardholder_name', user.demo_cardholder_name or '') }}">
+
+                        <label for="demo_card_number">Six-digit demo card number</label>
+                        <input id="demo_card_number" name="demo_card_number" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
+                            value="{{ request.form.get('demo_card_number', user.demo_card_number or '') }}">
+
+                        <label for="demo_card_expiry">Expiry month</label>
+                        <input id="demo_card_expiry" name="demo_card_expiry" type="month"
+                            value="{{ request.form.get('demo_card_expiry', user.demo_card_expiry or '') }}">
+                    </div>
+
+                    <div class="profile-payment-fields" data-payment-method-fields="qr_code">
+                        <label for="qr_code">QR code image (JPG, PNG, or WEBP)</label>
+                        <input id="qr_code" name="qr_code" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                        {% if user.qr_code_filename %}
+                            <img class="payment-qr-preview" src="{{ url_for('static', filename='uploads/' ~ user.qr_code_filename) }}" alt="Your saved payment QR code">
+                            <label class="profile-payment-remove">
+                                <input type="checkbox" name="remove_qr_code" value="true"> Remove saved QR code
+                            </label>
+                        {% endif %}
+                    </div>
+                </section>
+            {% endif %}
+
+            <button type="submit" class="btn">Save profile</button>
+            <a href="{{ url_for('profile') }}" class="back-btn">Cancel</a>
+        </form>
+    </main>
+    {% if role in ['Worker', 'Equipment Owner'] %}
+        <script>
+            document.querySelectorAll('[name="online_payment_methods"]').forEach((checkbox) => {
+                checkbox.addEventListener('change', () => {
+                    document.querySelectorAll('[data-payment-method-fields]').forEach((fields) => {
+                        const method = fields.dataset.paymentMethodFields;
+                        const enabled = document.querySelector(`[name="online_payment_methods"][value="${method}"]`).checked;
+                        fields.hidden = !enabled;
+                        fields.querySelectorAll('input').forEach((input) => {
+                            input.required = enabled && input.type !== 'file' && input.type !== 'checkbox';
+                        });
+                    });
+                });
+            });
+            document.querySelectorAll('[name="online_payment_methods"]').forEach((checkbox) => checkbox.dispatchEvent(new Event('change')));
+        </script>
+    {% endif %}
+{% endblock %}

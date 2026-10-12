@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Payment Details | AgroEase{% endblock %}
+{% block content %}
+<main class="container">
+    <div class="page-header">
+        <h1>Payment Details</h1>
+        <p>Full details for this payment record.</p>
+    </div>
+
+    <article class="rental-card payment-detail-card">
+        <h2>Payment #{{ payment.id }}</h2>
+        <p><strong>Rental / Booking:</strong>
+            {% if payment.tractor_rental %}{{ payment.tractor_rental.tractor.name }}
+            {% elif payment.machinery_rental %}{{ payment.machinery_rental.machinery.name }}
+            {% elif payment.booking %}Worker booking #{{ payment.booking.id }}
+            {% else %}Related record unavailable{% endif %}
+        </p>
+        <p><strong>Paid By:</strong> {{ payment.farmer.name }}</p>
+        {% if payment.tractor_rental %}
+            <p><strong>Equipment:</strong> Tractor</p>
+            <p><strong>Owner:</strong> {{ payment.tractor_rental.tractor.owner.name }}</p>
+            <p><strong>Rental Dates:</strong> {{ payment.tractor_rental.start_date or payment.tractor_rental.rental_date }} to {{ payment.tractor_rental.end_date or payment.tractor_rental.start_date or payment.tractor_rental.rental_date }}</p>
+        {% elif payment.machinery_rental %}
+            <p><strong>Equipment:</strong> Machinery</p>
+            <p><strong>Owner:</strong> {{ payment.machinery_rental.machinery.owner.name }}</p>
+            <p><strong>Rental Dates:</strong> {{ payment.machinery_rental.start_date or payment.machinery_rental.rental_date }} to {{ payment.machinery_rental.end_date or payment.machinery_rental.start_date or payment.machinery_rental.rental_date }}</p>
+        {% elif payment.booking %}
+            <p><strong>Worker:</strong> {{ payment.booking.worker.name }}</p>
+            <p><strong>Work Type:</strong> {{ payment.booking.worker.skill }}</p>
+            <p><strong>Booking Date:</strong> {{ payment.booking.booking_date }}</p>
+        {% endif %}
+        <p><strong>Amount:</strong> ₹{{ payment.amount }}</p>
+        <p><strong>Payment Method:</strong> {{ payment.payment_method|replace(' (Demo)', '') }}</p>
+        <p><strong>Status:</strong> <span class="{{ 'accepted' if payment.payment_status == 'Successful' else 'rejected' if payment.payment_status == 'Failed' else 'pending' }}">{{ payment.payment_status }}</span></p>
+        <p><strong>Transaction ID:</strong> {{ payment.transaction_id or 'Not assigned' }}</p>
+        <p><strong>Date:</strong> {{ payment.created_at|local_datetime }}</p>
+    </article>
+
+    <div class="dashboard-footer">
+        <a href="{{ url_for('payment_history') }}" class="back-btn">Back to Payment History</a>
+    </div>
+</main>
+{% endblock %}

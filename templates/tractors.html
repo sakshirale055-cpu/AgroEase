@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Available Tractors | AgroEase{% endblock %}
+{% block content %}
+<div class="container">
+
+        
+        <div class="page-header">
+
+            <h1>🚜 Available Tractors</h1>
+
+            <p>
+                Find and rent tractors according to your requirements.
+            </p>
+
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="{{ 'success-message' if category == 'success' else 'error-message' }}" role="status">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        
+        <form method="GET"
+              action="{{ url_for('tractors') }}"
+              class="search-form">
+
+            
+            <input
+                type="text"
+                name="search"
+                placeholder="Search tractor name or brand..."
+                value="{{ search }}"
+            >
+
+            
+            <input
+                type="text"
+                name="location"
+                placeholder="Enter location..."
+                value="{{ location }}"
+            >
+
+            
+            <input
+                type="number"
+                name="max_price"
+                placeholder="Maximum rent per day"
+                value="{{ max_price }}"
+                min="0"
+            >
+
+            
+            <button type="submit" class="btn">
+                🔍 Search
+            </button>
+
+        </form>
+
+
+        
+
+        {% if tractors %}
+
+            <div class="rental-container">
+
+                {% for tractor in tractors %}
+
+                    <div class="rental-card">
+
+                        {% if tractor.image_filename %}
+                            <img class="listing-image" src="{{ url_for('static', filename='uploads/' ~ tractor.image_filename) }}" alt="{{ tractor.name }}">
+                        {% else %}
+                            <div class="listing-placeholder" aria-hidden="true">🚜</div>
+                        {% endif %}
+                        <h2>
+                            🚜 {{ tractor.name }}
+                        </h2>
+
+                        <p>
+                            <strong>Brand:</strong>
+                            {{ tractor.brand }}
+                        </p>
+
+                        <p class="price">
+                            <strong>Rent Per Day:</strong>
+                            ₹{{ tractor.rent_per_day }}
+                        </p>
+                        <p><strong>Payment:</strong>
+                            {% if tractor.owner.formatted_online_payment_methods %}
+                                Cash and {{ tractor.owner.formatted_online_payment_methods|join(', ') }}
+                            {% else %}
+                                Cash only
+                            {% endif %}
+                        </p>
+
+                        {% if tractor.average_rating %}
+                            <p><strong>Rating:</strong> <span class="review-stars">★ {{ tractor.average_rating }}/5</span> · {{ tractor.review_count }} review(s)</p>
+                        {% else %}
+                            <p><strong>Rating:</strong> No reviews yet</p>
+                        {% endif %}
+                        <p class="location">
+                            <strong>Location:</strong>
+                            {{ tractor.location }}
+                        </p>
+
+                        <a href="{{ url_for('tractor_reviews', tractor_id=tractor.id) }}" class="btn">View reviews</a>
+
+                        {% if session.get('user_role') == 'Farmer' %}
+                            <a href="{{ url_for('chat', other_user_id=tractor.owner_id) }}" class="btn">Message owner</a>
+                        {% endif %}
+
+                        <p>
+                            <strong>Availability:</strong>
+
+                            {% if tractor.is_booked %}
+                                <span class="pending">Already booked</span>
+                                <br>Available from {{ tractor.available_from.strftime('%b %d, %Y') }}
+                            {% else %}
+                                <span class="accepted">Available now</span>
+                            {% endif %}
+                        </p>
+
+                        <a href="{{ url_for('rent_tractor', tractor_id=tractor.id) }}" class="btn">
+                            {% if tractor.is_booked %}Book from {{ tractor.available_from.strftime('%b %d') }}{% else %}Book Now{% endif %}
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            
+
+            <div class="no-data">
+
+                <h2>🔍 No Tractors Found</h2>
+
+                <p>
+                    No tractors match your search or filter.
+                </p>
+
+                <br>
+
+                <a href="{{ url_for('tractors') }}"
+                   class="btn">
+
+                    View All Tractors
+
+                </a>
+
+            </div>
+
+        {% endif %}
+
+
+        
+
+        <div class="dashboard-footer">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="back-btn">
+
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+{% endblock %}

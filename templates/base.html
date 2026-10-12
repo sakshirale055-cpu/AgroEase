@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#1f6228">
+	<title>{% block title %}AgroEase | Smart Agriculture{% endblock %}</title>
+
+	<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	{% block head_extra %}{% endblock %}
+	<script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+	<header class="site-header">
+		<a class="brand" href="{{ url_for('home') }}"><span aria-hidden="true">🌿</span> AgroEase</a>
+		<button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="primary-nav">
+			<span></span><span></span><span></span>
+		</button>
+		<nav class="site-nav" id="primary-nav" aria-label="Primary navigation">
+			<a href="{{ url_for('home') }}"{% if request.endpoint == 'home' %} class="active" aria-current="page"{% endif %}>Home</a>
+			<a href="{{ url_for('workers') }}"{% if request.endpoint in ('workers', 'book_worker', 'worker_reviews') or request.endpoint == 'submit_listing_review' and request.view_args.get('kind') == 'worker' %} class="active" aria-current="page"{% endif %}>Workers</a>
+			<a href="{{ url_for('tractors') }}"{% if request.endpoint in ('tractors', 'rent_tractor', 'tractor_reviews') or request.endpoint == 'submit_listing_review' and request.view_args.get('kind') == 'tractor' %} class="active" aria-current="page"{% endif %}>Tractors</a>
+			<a href="{{ url_for('machinery') }}"{% if request.endpoint in ('machinery', 'rent_machinery', 'machinery_reviews', 'review_machinery', 'machinery_rental_details') %} class="active" aria-current="page"{% endif %}>Machinery</a>
+			{% if session.get('user_id') %}
+				{% if session.get('user_role') == 'Worker' %}
+					<a href="{{ url_for('dashboard') }}"{% if request.endpoint in ('dashboard', 'worker_dashboard') %} class="active" aria-current="page"{% endif %}>Dashboard</a>
+				{% elif session.get('user_role') == 'Equipment Owner' %}
+					<a href="{{ url_for('dashboard') }}"{% if request.endpoint in ('dashboard', 'equipment_dashboard') %} class="active" aria-current="page"{% endif %}>Dashboard</a>
+				{% elif session.get('user_role') == 'Admin' %}
+					<a href="{{ url_for('admin_dashboard') }}"{% if request.endpoint in ('dashboard', 'admin_dashboard') %} class="active" aria-current="page"{% endif %}>Dashboard</a>
+				{% else %}
+					<a href="{{ url_for('dashboard') }}"{% if request.endpoint in ('dashboard', 'worker_dashboard', 'equipment_dashboard', 'admin_dashboard') %} class="active" aria-current="page"{% endif %}>Dashboard</a>
+				{% endif %}
+				<a href="{{ url_for('chats') }}"{% if request.endpoint in ('chats', 'chat') %} class="active" aria-current="page"{% endif %}>Messages</a>
+				<a href="{{ url_for('notifications') }}"{% if request.endpoint == 'notifications' %} class="active" aria-current="page"{% endif %}>Notifications</a>
+				<a href="{{ url_for('profile') }}"{% if request.endpoint in ('profile', 'edit_profile') %} class="active" aria-current="page"{% endif %}>Profile</a>
+				<a href="{{ url_for('logout') }}">Logout</a>
+			{% else %}
+				<a href="{{ url_for('register') }}"{% if request.endpoint == 'register' %} class="active" aria-current="page"{% endif %}>Register</a>
+				<a href="{{ url_for('login') }}"{% if request.endpoint == 'login' %} class="active" aria-current="page"{% endif %}>Login</a>
+			{% endif %}
+		</nav>
+	</header>
+
+	<div class="app-content">
+		{% block content %}{% endblock %}
+	</div>
+
+	<footer class="site-footer{% if request.endpoint == 'home' %} site-footer--home{% endif %}">
+		{% if request.endpoint == 'home' %}
+			<div class="site-footer-inner">
+				<div class="footer-main">
+					<section class="footer-about">
+						<a class="footer-brand" href="{{ url_for('home') }}">AgroEase</a>
+						<h2>About AgroEase</h2>
+						<p>We connect farmers with local workers, tractors and machinery to make essential farm services easier to find.</p>
+					</section>
+
+					<nav class="footer-links" aria-label="Footer quick links">
+						<h2>Quick Links</h2>
+						<ul>
+							<li><a href="{{ url_for('home') }}">Home</a></li>
+							<li><a href="{{ url_for('workers') }}">Workers</a></li>
+							<li><a href="{{ url_for('tractors') }}">Tractors</a></li>
+							<li><a href="{{ url_for('machinery') }}">Machinery</a></li>
+						</ul>
+					</nav>
+
+					<section class="footer-contact">
+						<h2>Contact</h2>
+						<ul>
+							<li><span aria-hidden="true">☎</span><a href="tel:+919876544350">+91 98765 44350</a></li>
+							<li><span aria-hidden="true">✉</span><a href="mailto:contact@agroease.com">contact@agroease.com</a></li>
+							<li><span aria-hidden="true">⌖</span><address>123 Green Field Ave,<br>Pune, Maharashtra</address></li>
+						</ul>
+					</section>
+
+					<section class="footer-social">
+						<h2>Social Media</h2>
+						<div class="footer-social-links">
+							<a href="https://www.facebook.com/" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">f</span></a>
+							<a href="https://www.x.com/" aria-label="X" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">X</span></a>
+							<a href="https://www.instagram.com/" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">◎</span></a>
+							<a href="https://www.linkedin.com/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">in</span></a>
+						</div>
+					</section>
+				</div>
+
+				<div class="footer-bottom">
+					<p>© 2026 AgroEase. All rights reserved.</p>
+					<details class="footer-policy">
+						<summary>Privacy Policy</summary>
+						<p>AgroEase uses account, booking, rental and message details to provide its services. Contact us at contact@agroease.com with questions about your information.</p>
+					</details>
+				</div>
+			</div>
+		{% else %}
+			<a href="{{ url_for('home') }}">AgroEase</a>
+			<span>Smart agriculture services and rentals</span>
+		{% endif %}
+	</footer>
+</body>
+</html>

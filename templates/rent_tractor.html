@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Rent Tractor | AgroEase{% endblock %}
+{% block content %}
+<h1>Rent Tractor</h1>
+
+    <h2>{{ tractor.name }}</h2>
+
+    <p>
+        <strong>Brand:</strong>
+        {{ tractor.brand }}
+    </p>
+
+    <p>
+        <strong>Rent Per Day:</strong>
+        ₹{{ tractor.rent_per_day }}
+    </p>
+
+    <p>
+        <strong>Location:</strong>
+        {{ tractor.location }}
+    </p>
+
+    <form action="{{ url_for('rent_tractor', tractor_id=tractor.id) }}"
+          method="POST">
+
+        <label for="start_date">Start date</label>
+        <input type="date" id="start_date" name="start_date" min="{{ available_from }}" required>
+
+        <label for="end_date">End date</label>
+        <input type="date" id="end_date" name="end_date" min="{{ available_from }}" required>
+
+        <br><br>
+
+        <button type="submit">
+            Confirm Rental
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="{{ url_for('tractors') }}">
+        <button type="button">
+            Back to Tractors
+        </button>
+    </a>
+{% endblock %}

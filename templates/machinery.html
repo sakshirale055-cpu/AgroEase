@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Available Machinery - AgroEase{% endblock %}
+{% block content %}
+<div class="container">
+
+        <div class="page-header">
+            <h1>Available Agricultural Machinery</h1>
+            <p>Browse reliable machinery available for your next field job.</p>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="{{ 'success-message' if category == 'success' else 'error-message' }}" role="status">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+        <form method="GET" action="{{ url_for('machinery') }}" class="search-form">
+
+            <input
+                type="text"
+                name="search"
+                placeholder="Search machinery..."
+                value="{{ search }}"
+            >
+
+            <input
+                type="text"
+                name="location"
+                placeholder="Location..."
+                value="{{ location }}"
+            >
+
+            <input
+                type="number"
+                name="max_price"
+                placeholder="Maximum rent per day"
+                value="{{ max_price }}"
+                min="0"
+            >
+
+            <button type="submit" class="btn">
+                🔍 Search
+            </button>
+
+        </form>
+        {% if machinery %}
+
+            <div class="machinery-container">
+
+                {% for item in machinery %}
+
+                    <div class="machinery-card">
+
+                        {% if item.image_filename %}
+                            <img class="listing-image" src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}" alt="{{ item.name }}">
+                        {% else %}
+                            <div class="listing-placeholder" aria-hidden="true">⚙</div>
+                        {% endif %}
+                        <h2>{{ item.name }}</h2>
+
+                        <p>
+                            <strong>Type:</strong>
+                            {{ item.type }}
+                        </p>
+
+                        <p>
+                            <strong>Rent Per Day:</strong>
+                            ₹{{ item.rent_per_day }}
+                        </p>
+                        <p><strong>Payment:</strong>
+                            {% if item.owner.formatted_online_payment_methods %}
+                                Cash and {{ item.owner.formatted_online_payment_methods|join(', ') }}
+                            {% else %}
+                                Cash only
+                            {% endif %}
+                        </p>
+                        
+                        {% if item.average_rating %}
+
+                        <p>
+                            <strong>Rating:</strong>
+
+                                {% if item.average_rating >= 4.5 %}
+                                    ⭐⭐⭐⭐⭐
+                                {% elif item.average_rating >= 3.5 %}
+                                    ⭐⭐⭐⭐☆
+                                {% elif item.average_rating >= 2.5 %}
+                                    ⭐⭐⭐☆☆
+                                {% elif item.average_rating >= 1.5 %}
+                                    ⭐⭐☆☆☆
+                                {% else %}
+                                    ⭐☆☆☆☆
+                                {% endif %}
+
+                                {{ item.average_rating }}/5
+                            </p>
+
+                            <p>
+                                {{ item.review_count }} Review(s)
+                            </p>
+
+                        {% else %}
+
+                        <p>
+                            <strong>Rating:</strong> No reviews yet
+                        </p>
+
+                        {% endif %}
+                        <p>
+                            <strong>Location:</strong>
+                            {{ item.location }}
+                        </p>
+
+                        <a href="{{ url_for('machinery_reviews', machinery_id=item.id) }}" class="btn">
+                            View reviews
+                        </a>
+
+                        {% if session.get('user_role') == 'Farmer' %}
+                            <a href="{{ url_for('chat', other_user_id=item.owner_id) }}" class="btn">Message owner</a>
+                        {% endif %}
+
+                        <p>
+                            <strong>Availability:</strong>
+
+                            {% if item.is_booked %}
+                                <span class="pending">Already booked</span>
+                                <br>Available from {{ item.available_from.strftime('%b %d, %Y') }}
+                            {% else %}
+                                <span class="accepted">Available now</span>
+                            {% endif %}
+
+                        </p>
+
+                        <a href="{{ url_for('rent_machinery', machinery_id=item.id) }}" class="btn">
+                            {% if item.is_booked %}Book from {{ item.available_from.strftime('%b %d') }}{% else %}Book Now{% endif %}
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="no-data">
+
+                <h2>No Machinery Available</h2>
+
+                <p>
+                    Currently, no agricultural machinery is available for rent.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+        <div class="dashboard-footer">
+            <a href="{{ url_for('dashboard') }}" class="back-btn">Back to Dashboard</a>
+        </div>
+
+    </div>
+{% endblock %}
